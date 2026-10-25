@@ -1,0 +1,23 @@
+services:
+  api:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      DB_PATH: /service/data/jobs.db
+      SEED: "42"
+    volumes:
+      - job_data:/service/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+  worker:
+    build: .
+    command: python -m app.worker
+    environment:
+      DB_PATH: /service/data/jobs.db
+      SEED: "42"
+    volumes:
+      - job_data:/service/data
+    restart: unless-stopped
+volumes:
+  job_data:
